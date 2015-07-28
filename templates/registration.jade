@@ -1,0 +1,24 @@
+//  registration.jade
+
+doctype html
+html
+    head
+        title Registration of user
+        meta(charset="utf-8")
+        link(rel="stylesheet", href="css/bootstrap.min.css")
+        link(rel="stylesheet", href="css/style.css")
+    body
+        #regContainer
+            form( method="post")#regForm_input.well.span6
+                h1
+                p#sub1.subheading Please tell us a little about yourself.
+                hr
+                .form-group
+                    label(for="regUser") Username
+                    input(type="text", name="regUser", id="regUser").span4.required.form-control
+                .form-group
+                    label(for='regPass') Password
+                    input(type="password", name="regPass", id='regPass').span4.required.form-control
+                .form-group
+                    button(type='submit').btn.btn-primary.pull-left Подтвердить факт регистрации
+                    button(type='button', onclick="window.location.href='/';")#toMain.btn.btn-default.pull-right Ой не, я боюсь
