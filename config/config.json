@@ -6,4 +6,5 @@
     "collection": "accounts"
   },
   "keys": "puzosnoob"
+  , "uri": "mongodb://localhost:27017"
 }

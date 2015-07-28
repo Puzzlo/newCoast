@@ -11,7 +11,8 @@ module.exports = function (app) {
 
     app.post('/registration', function (req, res) {
         console.log(req.body);
-        require('./registration').validDate(req.body.user, req.body.pass);
+        //require('./registration').validDate(req.body.user, req.body.pass);
+        require('./registration')();
         //res.redirect('/');
     });
 
