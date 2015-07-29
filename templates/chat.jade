@@ -1,0 +1,21 @@
+// chat.jade
+doctype
+html
+    head
+        title Akucha
+        script(src="/socket.io/socket.io.js")
+        style
+            include ../public/css/style.css
+    body
+        fieldset#fieldMain
+            legend просто чат
+            #simple
+        #usersOnline
+        .clearfix
+        #vvod
+            form#forma(action='', onsubmit='return false')
+                textarea#textOfMessage
+                input#send.btn.btn-primary(type='submit', value='send message')
+        .clearfix
+        script
+            include ../routes/chat.js

@@ -36,5 +36,40 @@ var io = require('socket.io')(http);
 var server = http.listen(config.get('port'));
 console.log('application running on port ' + config.get('port'));
 
+var users = [];
+
+io.sockets.on('connection', function(client){
+
+    client.on('hello', function (data) {
+        client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
+        client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});
+        users[users.length] = data.name;
+        io.sockets.emit('drawUsers', users);
+        console.log(users);
+
+    });
+
+    client.on('sendMessageToServer', function(data){
+        if(users.indexOf(data.whoSend)== -1) {
+            // TODO close connect of sender this message
+        } else {
+
+        }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+});
+
 
 
