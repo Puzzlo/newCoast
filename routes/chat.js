@@ -1,16 +1,19 @@
 /**
  * Created by esskov on 15.04.2015.
  */
-var socket = io.connect('http://localhost:3000');
+var socket = io.connect('http://192.168.0.67:3000');
+var usersOnClient = [];
+var privateRecipients = [];
+var privateMessages = [];
 
 window.onload = function() {
-    socket = io.connect('http://localhost:3000');
 
     //run_cmd( "whoami", [], function(text) { console.log (text); alert(text); });
 
 
     var simpleMessages = [];
     var nameOfUser = getCookie('nameOfUser');
+
     socket.emit('hello', {name: nameOfUser});
     socket.on('simpleMessage', function(data){
         simpleMessages.push(data.message);
@@ -18,6 +21,7 @@ window.onload = function() {
         for ( var i = 0, len = simpleMessages.length; i < len; i++){
             html += simpleMessages[i] + '<br />';
         }
+        console.log(html);
         document.getElementById('simple').innerHTML = html;
     });
 
@@ -25,15 +29,18 @@ window.onload = function() {
     // draw users, check click on checkboxes
     socket.on('drawUsers', function(data){
         var html = '<table>';
-        html += '<tr><td>Имя</td><td>Отослать</td><td>С подтверждением</td><tr>';
+        html += '<tr><td>Имя</td><td>Отослать</td><td>С подтверждением</td></tr>';
         for ( var user in data ) {
-            html += '<tr><td>' + data[user] + '</td>'
-            +'<td>'+'<input type="checkbox" '
-            //+'onchange="changePrivate();">'+'</td>'
-            +'onchange="changePrivateRecipients(\''+data[user].id + '\');">'+'</td>'
-            +'<td>'+'<input type="checkbox" class="checkbox checkbox-primary" '
-            +'onchange="changeConfirmRecipients(\''+data[user].id+'\', \'' + data[user].name + '\');">'+'</td>'
-            +'</td></tr>';
+
+            if( user != nameOfUser ) {
+                html += '<tr><td>' + user + '</td>'
+                + '<td>' + '<input type="checkbox" '
+                    //+'onchange="changePrivate();">'+'</td>'
+                + 'onchange="changePrivateRecipients(\'' + user + '\');">'
+                    // +'</td><td>'+'<input type="checkbox" class="checkbox checkbox-primary" '
+                    //+'onchange="changeConfirmRecipients(\''+data[user].id+'\', \'' + data[user].name + '\');">'+'</td>'
+                + '</td></tr>';
+            }
         }
         html += '</table>';
         usersOnline.innerHTML = html;
@@ -43,16 +50,23 @@ window.onload = function() {
 
     });
 
+    socket.on('privateMessage', function (data) {
+        var priv = document.getElementById('private');
+        privateMessages.push(data.message + '<br/>');
+        priv.innerHTML = privateMessages;
+    });
+
     forma.onsubmit = function () {
         var message = document.getElementById('textOfMessage');
         //console.log(message.value);
         var idMessage = new Date().getTime().toString();
+        //alert('nameOfUser = ' + nameOfUser);
         socket.emit('sendMessageToServer', {
-                                            idDate: idMessage,
-                                            WhoSend: nameOfUser,
-                                            message: message.value
-                                            //priv: privateRecipients,
-                                            //confirm: confirmRecipients
+                                            idDate: idMessage
+                                            , whoSend: nameOfUser
+                                            , message: message.value
+                                            , priv: privateRecipients
+                                            //, confirm: confirmRecipients
                                             });
 
         //console.log('messages = '+ JSON.stringify(messages));
@@ -73,10 +87,10 @@ function confirm(messageId, id){
 
 
 
-function changePrivateRecipients(id) {
-    var index = privateRecipients.indexOf(id);
+function changePrivateRecipients(user) {
+    var index = privateRecipients.indexOf(user);
     if (  index == -1 ) {
-        privateRecipients.push(id);
+        privateRecipients.push(user);
     }else {
         privateRecipients.splice(index, 1);
     }
@@ -143,7 +157,6 @@ function run_cmd(cmd, args, callBack ) {
     //child.stdout.on('end', function() { callBack (resp) });
 } // ()
 
-// РІРѕР·РІСЂР°С‰Р°РµС‚ cookie СЃ РёРјРµРЅРµРј name, РµСЃР»Рё РµСЃС‚СЊ, РµСЃР»Рё РЅРµС‚, С‚Рѕ undefined
 function getCookie(name) {
     var matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
