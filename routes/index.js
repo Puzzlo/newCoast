@@ -27,7 +27,6 @@ module.exports = function (app) {
     });
 
     app.get('/chat', function (req, res) {
-        res.header('Access-Control-Allow-Origin', '*');
         res.render('chat');
     })
  };

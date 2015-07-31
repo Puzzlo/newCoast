@@ -42,6 +42,16 @@ console.log('application running on port ' + config.get('port'));
 
 var users = {};
 
+function findNameById(id){
+    for ( pers in users){
+        if( users.pers == id ) {
+            var result = pers;
+            break;
+        }
+    }
+    return pers;
+}
+
 io.sockets.on('connection', function(client){
 
     client.on('hello', function (data) {
@@ -51,12 +61,13 @@ io.sockets.on('connection', function(client){
         io.sockets.emit('drawUsers', users);
         //client.id = data.name;
         console.log('users = ' + JSON.stringify(users));
+        console.log('client = ' + client);
 
     });
 
     client.on('sendMessageToServer', function(data){
 
-
+        console.log(JSON.stringify(data));
            // console.log('clisent =' + findClientsSocket(null, '/chat'));
 
 
@@ -64,18 +75,49 @@ io.sockets.on('connection', function(client){
         //    // TODO close connect of sender this message
         //} else {
             // big else, We handle all possible messages
-            console.log(data.priv);
-            if ( data.priv.length ) {
+        if(data.confirm.length) {
+
+            data.confirm.forEach(function(receiver) {
+                io.sockets.connected[users[receiver]].emit('forConfirm',
+                    {
+                        messageId: data.idDate,
+                        whoSend: data.whoSend,
+                        message: data.message
+                    }
+                );
+            });
+
+        } else if ( data.priv.length ) {
                 // send private message to some ppl
-                data.priv.forEach(function(ppl){
-                    //console.log(ppl);
-                    io.sockets.connected[users[ppl]].emit('privateMessage',
-                          {message: 'from ' + data.whoSend + ' : ' + data.message});
-                });
-            } else {
+                    client.emit('privateMessage', { message: 'To ' + data.priv + ' : ' + data.message});
+                    data.priv.forEach(function(ppl){
+                        //console.log(ppl);
+                        io.sockets.connected[users[ppl]].emit('privateMessage',
+                              {message: 'from ' + data.whoSend + ' : ' + data.message});
+                    });
+                } else {
+                    // just simple message
                 io.sockets.emit('simpleMessage', {message: data.whoSend + ' : ' + data.message});
             }
         //}
+    });
+
+    client.on('accept', function (data) {
+       io.sockets.connected[users[data.senderOfMessage]].emit('iConfirm',
+           {
+               messageId: data.id,
+               whoConfirm: data.whoAskConfirm
+           }
+       );
+    });
+    client.on('disconnect', function(data){
+        if(users.length > 2 ) {
+
+            var a = users[findNameById(client.id)];
+            client.broadcast.emit('simpleMessage', {message: 'Нас покидает ' + a});
+            io.sockets.emit('drawUsers', users);
+        }
+        delete users[a];
     });
 
 

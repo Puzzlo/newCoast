@@ -92,6 +92,7 @@ a {
 .confirmRed {
     background: red;
     margin: 0 3px;
+    min-width: 30px;
 }
 .confirmGreen {
     background: lightseagreen;
