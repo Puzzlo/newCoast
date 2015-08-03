@@ -14,7 +14,7 @@ html
         .clearfix
         #vvod
             form#forma(action='', onsubmit='return false')
-                textarea#textOfMessage
+                textarea#textOfMessage(onkeydown="sendMessage(event)")
                 input#send.btn.btn-primary(type='submit', value='send message')
         .clearfix
         #confirmSended

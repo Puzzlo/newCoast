@@ -43,6 +43,7 @@ console.log('application running on port ' + config.get('port'));
 var users = {};
 
 function findNameById(id){
+    if( Object.keys(users).length == 0 ) return -1;
     for ( pers in users){
         if( users.pers == id ) {
             var result = pers;
@@ -54,7 +55,11 @@ function findNameById(id){
 
 io.sockets.on('connection', function(client){
 
+
+
     client.on('hello', function (data) {
+        console.log('index='+Object.keys(users).indexOf(data.name));
+        if(Object.keys(users).indexOf(data.name)!= -1) window.location.href = '/';
         client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
         client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});
         users[data.name] = client.id;
@@ -95,7 +100,7 @@ io.sockets.on('connection', function(client){
                         io.sockets.connected[users[ppl]].emit('privateMessage',
                               {message: 'from ' + data.whoSend + ' : ' + data.message});
                     });
-                } else {
+        } else {
                     // just simple message
                 io.sockets.emit('simpleMessage', {message: data.whoSend + ' : ' + data.message});
             }
@@ -111,13 +116,12 @@ io.sockets.on('connection', function(client){
        );
     });
     client.on('disconnect', function(data){
-        if(users.length > 2 ) {
-
-            var a = users[findNameById(client.id)];
+        var a = findNameById(client.id);
+        delete users[a];
+        if(Object.keys(users).length > 1 ) {
             client.broadcast.emit('simpleMessage', {message: 'Нас покидает ' + a});
             io.sockets.emit('drawUsers', users);
         }
-        delete users[a];
     });
 
 

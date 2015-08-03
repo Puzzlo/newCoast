@@ -13,6 +13,7 @@ window.onload = function() {
     //run_cmd( "whoami", [], function(text) { console.log (text); alert(text); });
 
 
+
     var simpleMessages = [];
     var nameOfUser = getCookie('nameOfUser');
 
@@ -25,6 +26,8 @@ window.onload = function() {
         }
         //console.log(html);
         document.getElementById('simple').innerHTML = html;
+        document.getElementById('simple').scrollTop = 9999;
+
     });
 
 
@@ -55,7 +58,15 @@ window.onload = function() {
     socket.on('privateMessage', function (data) {
         var priv = document.getElementById('private');
         privateMessages.push(data.message + '<br/>');
-        priv.innerHTML = privateMessages;
+        console.log('private='+privateMessages);
+        var liBegin = '<li>';
+        var liEnd = '</li>';
+        priv.innerHTML = '<ul>';
+        for(var i=0; i < privateMessages.length; i++){
+            priv.innerHTML += liBegin + privateMessages[i] + liEnd;
+        }
+        priv.innerHTML += '</ul>';
+        document.getElementById('private').scrollTop = 9999;
     });
 
     socket.on('forConfirm', function (data) {
@@ -72,6 +83,7 @@ window.onload = function() {
         +  data.whoSend
         + '\');this.disabled=true;this.className = \'btn btn-xs btn-info\';">Подтвердить</button>';
         list.appendChild(mB);
+        document.getElementById('confirmReceived').scrollTop = 9999;
 
     });
 
@@ -87,7 +99,29 @@ window.onload = function() {
 
     });
 
-    forma.onsubmit = function () {
+
+
+    //var codes = [];
+    //document.onkeydown = function (e) {
+    //    e = e || window.event;
+    //    codes.push(String.fromCharCode(e.keyCode));
+    //    console.log(codes);
+    //
+    //    if (codes.length == 2) {
+    //        if((codes.indexOf(17)!=-1 && codes.indexOf(13))  ||  (codes.indexOf(16)!=-1 && codes.indexOf(13))) {
+    //            codes = [];
+    //            subm();
+    //        }
+    //    }
+    //};
+    //document.onkeyup = function(e) {
+    //    codes = [];
+    //};
+
+
+
+
+    forma.onsubmit = function() {
         var message = document.getElementById('textOfMessage');
         //console.log(message.value);
         var idMessage = new Date().getTime().toString();
@@ -133,7 +167,7 @@ window.onload = function() {
         confirmRecipients = [];
 
         return false;
-    };
+    }
 };
 
 
@@ -234,4 +268,11 @@ function getCookie(name) {
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
     ));
     return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function sendMessage(e) {
+    e = e || window.event;
+    if(e.keyCode == 13 && e.ctrlKey || e.keyCode == 13 && e.shiftKey){
+        document.getElementById('forma').onsubmit();
+    }
 }

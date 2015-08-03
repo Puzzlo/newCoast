@@ -46,7 +46,7 @@ a {
     max-height: 200px;
     float: left;
     border: 1px solid #279545;
-    overflow-y: auto;
+    overflow-y: scroll;
     word-wrap: break-word;
 }
 #usersOnline{
@@ -75,7 +75,7 @@ a {
 #confirmSended, #confirmReceived,  #private {
     width: 48%;
     height: 200px;
-    overflow-y: auto;
+    overflow-y: scroll;
     border: 1px solid #131895;
     margin: 5px;
     float: left;
