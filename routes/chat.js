@@ -1,7 +1,8 @@
 /**
  * Created by esskov on 15.04.2015.
  */
-var socket = io.connect('http://192.168.0.67:3000');
+//var socket = io.connect('http://192.168.0.67:3000');
+var socket = io.connect('http://localhost:3000');
 var usersOnClient = [];
 var privateRecipients = [];
 var confirmRecipients = [];
@@ -18,6 +19,11 @@ window.onload = function() {
     var nameOfUser = getCookie('nameOfUser');
 
     socket.emit('hello', {name: nameOfUser});
+
+    socket.on('closeNow', function () {
+        console.log('now closed');
+        window.location.href = '/';
+    });
     socket.on('simpleMessage', function(data){
         simpleMessages.push(data.message);
         var html = '';

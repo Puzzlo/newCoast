@@ -43,7 +43,7 @@ console.log('application running on port ' + config.get('port'));
 var users = {};
 
 function findNameById(id){
-    if( Object.keys(users).length == 0 ) return -1;
+    if( Object.keys(users).length == 0 ) return null;
     for ( pers in users){
         if( users.pers == id ) {
             var result = pers;
@@ -59,15 +59,18 @@ io.sockets.on('connection', function(client){
 
     client.on('hello', function (data) {
         console.log('index='+Object.keys(users).indexOf(data.name));
-        if(Object.keys(users).indexOf(data.name)!= -1) window.location.href = '/';
-        client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
-        client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});
-        users[data.name] = client.id;
-        io.sockets.emit('drawUsers', users);
-        //client.id = data.name;
-        console.log('users = ' + JSON.stringify(users));
-        console.log('client = ' + client);
-
+        if(Object.keys(users).indexOf(data.name)!= -1) {
+            client.emit('closeNow', {});
+            console.log('disconnect in app');
+        } else {
+            client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
+            client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});
+            users[data.name] = client.id;
+            io.sockets.emit('drawUsers', users);
+            //client.id = data.name;
+            console.log('users = ' + JSON.stringify(users));
+            console.log('client = ' + client);
+        }
     });
 
     client.on('sendMessageToServer', function(data){
@@ -118,7 +121,7 @@ io.sockets.on('connection', function(client){
     client.on('disconnect', function(data){
         var a = findNameById(client.id);
         delete users[a];
-        if(Object.keys(users).length > 1 ) {
+        if(Object.keys(users).length > 0 ) {
             client.broadcast.emit('simpleMessage', {message: 'Нас покидает ' + a});
             io.sockets.emit('drawUsers', users);
         }
