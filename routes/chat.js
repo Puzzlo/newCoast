@@ -1,13 +1,14 @@
 /**
  * Created by esskov on 15.04.2015.
  */
-//var socket = io.connect('http://192.168.0.67:3000');
-var socket = io.connect('http://localhost:3000');
-var usersOnClient = [];
+var socket = io.connect('http://192.168.0.67:3000');
+//var socket = io.connect('http://localhost:3000');
 var privateRecipients = [];
 var confirmRecipients = [];
 var privateMessages = [];
 var messagesWithConfirm = [];
+var title = 'Akucha';
+var newForConfirm = 0;
 
 window.onload = function() {
 
@@ -21,18 +22,19 @@ window.onload = function() {
     socket.emit('hello', {name: nameOfUser});
 
     socket.on('closeNow', function () {
-        console.log('now closed');
+        alert('Пользователь с таким ником уже сидит в чате.');
         window.location.href = '/';
     });
     socket.on('simpleMessage', function(data){
         simpleMessages.push(data.message);
+        console.log('simplemessage=' + data.message);
         var html = '';
         for ( var i = 0, len = simpleMessages.length; i < len; i++){
             html += simpleMessages[i] + '<br />';
         }
         //console.log(html);
-        document.getElementById('simple').innerHTML = html;
-        document.getElementById('simple').scrollTop = 9999;
+        document.getElementById('mainChat__messages').innerHTML = html;
+        document.getElementById('mainChat__messages').scrollTop = 9999;
 
     });
 
@@ -40,7 +42,7 @@ window.onload = function() {
     // draw users, check click on checkboxes
     socket.on('drawUsers', function(data){
         var html = '<table>';
-        html += '<tr><td>Имя</td><td>Отослать</td><td>С подтверждением</td></tr>';
+        html += '<tr><td class="third">Имя</td><td class="third">Приватно</td><td class="third">С подтверждением</td></tr>';
         for ( var user in data ) {
 
             if( user != nameOfUser ) {
@@ -62,7 +64,7 @@ window.onload = function() {
     });
 
     socket.on('privateMessage', function (data) {
-        var priv = document.getElementById('private');
+        var priv = document.getElementById('privateChat');
         privateMessages.push(data.message + '<br/>');
         console.log('private='+privateMessages);
         var liBegin = '<li>';
@@ -72,7 +74,7 @@ window.onload = function() {
             priv.innerHTML += liBegin + privateMessages[i] + liEnd;
         }
         priv.innerHTML += '</ul>';
-        document.getElementById('private').scrollTop = 9999;
+        document.getElementById('privateChat').scrollTop = 9999;
     });
 
     socket.on('forConfirm', function (data) {
@@ -90,6 +92,7 @@ window.onload = function() {
         + '\');this.disabled=true;this.className = \'btn btn-xs btn-info\';">Подтвердить</button>';
         list.appendChild(mB);
         document.getElementById('confirmReceived').scrollTop = 9999;
+        document.title = title + '(' + ++newForConfirm + ')';
 
     });
 
@@ -128,7 +131,7 @@ window.onload = function() {
 
 
     forma.onsubmit = function() {
-        var message = document.getElementById('textOfMessage');
+        var message = document.getElementById('vvod__text');
         //console.log(message.value);
         var idMessage = new Date().getTime().toString();
         //alert('nameOfUser = ' + nameOfUser);
@@ -182,6 +185,9 @@ function confirm(messageId, nameOfClient, whoSend){
             { id: messageId ,
             whoAskConfirm: nameOfClient,
             senderOfMessage: whoSend });
+    if(--newForConfirm)
+        document.title = title + '(' + newForConfirm + ')';
+    else document.title = title;
 }
 
 

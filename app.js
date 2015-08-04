@@ -61,7 +61,6 @@ io.sockets.on('connection', function(client){
         console.log('index='+Object.keys(users).indexOf(data.name));
         if(Object.keys(users).indexOf(data.name)!= -1) {
             client.emit('closeNow', {});
-            console.log('disconnect in app');
         } else {
             client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
             client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});

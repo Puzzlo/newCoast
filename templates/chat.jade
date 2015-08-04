@@ -7,18 +7,24 @@ html
         style
             include ../public/css/style.css
     body
-        fieldset#fieldMain
-            legend просто чат
-            #simple
+        fieldset#mainChat__fieldset
+            legend Общественно-полезный чат
+            #mainChat__messages
         #usersOnline
         .clearfix
         #vvod
             form#forma(action='', onsubmit='return false')
-                textarea#textOfMessage(onkeydown="sendMessage(event)")
-                input#send.btn.btn-primary(type='submit', value='send message')
+                textarea#vvod__text(onkeydown="sendMessage(event)")
+                input#vvod__button.btn.btn-primary(type='submit', value='Отослать(можно по Ctrl+Enter или Shift-Enter)')
         .clearfix
-        #confirmSended
-        #confirmReceived
-        #private
+        fieldset#confirmChat_sended
+            legend Отосланные указания
+            #confirmSended
+        fieldset#confirmChat_received
+            legend Подтверждение принятых указаний
+            #confirmReceived
+        fieldset#privateChat
+            legend Приватные сообщения
+            #private
         script
             include ../routes/chat.js
