@@ -32,7 +32,6 @@ window.onload = function() {
         for ( var i = 0, len = simpleMessages.length; i < len; i++){
             html += simpleMessages[i] + '<br />';
         }
-        //console.log(html);
         document.getElementById('mainChat__messages').innerHTML = html;
         document.getElementById('mainChat__messages').scrollTop = 9999;
 
@@ -64,17 +63,19 @@ window.onload = function() {
     });
 
     socket.on('privateMessage', function (data) {
-        var priv = document.getElementById('privateChat');
-        privateMessages.push(data.message + '<br/>');
+        var priv = document.getElementById('private');
+        privateMessages.push(data.message);
         console.log('private='+privateMessages);
         var liBegin = '<li>';
         var liEnd = '</li>';
-        priv.innerHTML = '<ul>';
+        var inner = '<ul>';
+
         for(var i=0; i < privateMessages.length; i++){
-            priv.innerHTML += liBegin + privateMessages[i] + liEnd;
+            inner += liBegin + privateMessages[i] + liEnd;
         }
-        priv.innerHTML += '</ul>';
-        document.getElementById('privateChat').scrollTop = 9999;
+        inner += '</ul>';
+        priv.innerHTML = inner;
+        document.getElementById('private').scrollTop = 9999;
     });
 
     socket.on('forConfirm', function (data) {
@@ -132,9 +133,8 @@ window.onload = function() {
 
     forma.onsubmit = function() {
         var message = document.getElementById('vvod__text');
-        //console.log(message.value);
         var idMessage = new Date().getTime().toString();
-        //alert('nameOfUser = ' + nameOfUser);
+        //console.log(message.value);
 
         if(confirmRecipients.length) {
 
@@ -171,7 +171,8 @@ window.onload = function() {
             });
 
         uncheckAllcheckboxes();
-        document.getElementById('textOfMessage').value = '';
+        document.getElementById('vvod__text').value = '';
+        document.getElementById("vvod__text").focus();
         privateRecipients = [];
         confirmRecipients = [];
 
@@ -286,5 +287,6 @@ function sendMessage(e) {
     e = e || window.event;
     if(e.keyCode == 13 && e.ctrlKey || e.keyCode == 13 && e.shiftKey){
         document.getElementById('forma').onsubmit();
+        document.getElementById("vvod__text").focus();
     }
 }

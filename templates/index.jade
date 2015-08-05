@@ -1,4 +1,4 @@
-//  index.jade  
+//  index.jade
 
 doctype html
 html
@@ -8,5 +8,9 @@ html
         script(src = '/socket.io/socket.io.js')
         link(rel="stylesheet", href="css/style.css")
     body
-        a(href='/login') login логин
-        a(href='/registration') registration регистрация
+        form#form__buttons
+            .but
+                input#form__button_login(type='button', value='Авторизация', onclick="javascript:window.location='/login'")
+            .clearfix
+            .but
+                input#form__button_reg(type='button', value='Регистрация', onclick="javascript:window.location='/registration'")

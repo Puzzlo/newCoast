@@ -74,6 +74,7 @@ io.sockets.on('connection', function(client){
 
     client.on('sendMessageToServer', function(data){
 
+        if(data.message == "") return;
         console.log(JSON.stringify(data));
            // console.log('clisent =' + findClientsSocket(null, '/chat'));
 

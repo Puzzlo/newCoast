@@ -10,17 +10,15 @@ html
         script(src='/js/jquery.min.js')
         script(src='/js/bootstrap.min.js')
     body
-        #loginContainer
-            form( method="post")#loginForm_input.well.span6
-                h1 r U welkam?
-                p#sub1.subheading Please tell us a little about yourself,<br />
-                    | few name and few password
-                hr
-                .form-group
-                    label(for="loginUser") Username
-                    input(value="1", type="text", name="loginUser", id="loginUser").span4.required.form-control
-                .form-group
-                    label(for='loginPass') Password
-                    input(value="1", type="password", name="loginPass", id='loginPass').span4.required.form-control
-                .form-group
-                    button(type='submit').btn.btn-default Zалогиниться - и в чат
+        form#login__form(method="post")
+            h1 Добро пожаловать !
+            hr
+            label.login__form_label(for="loginUser") Ваш логин :
+            .clearfix
+            input.login__form_input(value="1", type="text", name="loginUser", id="loginUser")
+            .clearfix
+            label.login__form_label(for='loginPass') Ваш пароль :
+            .clearfix
+            input.login__form_input(value="1", type="password", name="loginPass", id='loginPass')
+            .clearfix
+            button(type='submit') Кнопка входа в чат

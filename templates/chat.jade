@@ -14,8 +14,8 @@ html
         .clearfix
         #vvod
             form#forma(action='', onsubmit='return false')
-                textarea#vvod__text(onkeydown="sendMessage(event)")
-                input#vvod__button.btn.btn-primary(type='submit', value='Отослать(можно по Ctrl+Enter или Shift-Enter)')
+                textarea#vvod__text(autofocus, rows='5', cols='80' onkeydown="sendMessage(event)")
+                input#vvod__button(type='submit', value='Отослать')
         .clearfix
         fieldset#confirmChat_sended
             legend Отосланные указания
