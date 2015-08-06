@@ -9,6 +9,7 @@ var privateMessages = [];
 var messagesWithConfirm = [];
 var title = 'Akucha';
 var newForConfirm = 0;
+var arrayTabs = []; // array of tabs in private messages
 
 window.onload = function() {
 
@@ -63,19 +64,24 @@ window.onload = function() {
     });
 
     socket.on('privateMessage', function (data) {
-        var priv = document.getElementById('private');
-        privateMessages.push(data.message);
-        console.log('private='+privateMessages);
-        var liBegin = '<li>';
-        var liEnd = '</li>';
-        var inner = '<ul>';
 
-        for(var i=0; i < privateMessages.length; i++){
-            inner += liBegin + privateMessages[i] + liEnd;
-        }
-        inner += '</ul>';
-        priv.innerHTML = inner;
-        document.getElementById('private').scrollTop = 9999;
+        console.log('time='+data.time);
+        // работа с вкладками
+        showTabs(data.whoSend, data.message, data.time);
+
+        //var priv = document.getElementById('private');
+        //privateMessages.push(data.message);
+        //console.log('private='+privateMessages);
+        //var liBegin = '<li>';
+        //var liEnd = '</li>';
+        //var inner = '<ul>';
+        //
+        //for(var i=0; i < privateMessages.length; i++){
+        //    inner += liBegin + privateMessages[i] + liEnd;
+        //}
+        //inner += '</ul>';
+        //priv.innerHTML = inner;
+        //document.getElementById('private').scrollTop = 9999;
     });
 
     socket.on('forConfirm', function (data) {
@@ -169,6 +175,12 @@ window.onload = function() {
                 , priv: privateRecipients
                 , confirm: confirmRecipients
             });
+
+        if(privateRecipients.length) {
+            privateRecipients.forEach(function(ppl){
+                showTabs(ppl, message.value, idMessage, 1);
+            });
+        }
 
         uncheckAllcheckboxes();
         document.getElementById('vvod__text').value = '';
@@ -288,5 +300,24 @@ function sendMessage(e) {
     if(e.keyCode == 13 && e.ctrlKey || e.keyCode == 13 && e.shiftKey){
         document.getElementById('forma').onsubmit();
         document.getElementById("vvod__text").focus();
+    }
+}
+
+function showTabs(companion, message, time, self) {
+    self = self || 0;
+    var im = self?' Я: ':'';
+    var hours = new Date(parseInt(time)).getHours();
+    var minutes = new Date(parseInt(time)).getMinutes();
+    var now = '[' + hours + ':' + minutes + ']' + im;
+    if(arrayTabs.indexOf(companion) == -1) {
+        arrayTabs.push(companion);
+        var theDiv = document.createElement('span');
+        theDiv.setAttribute('id', 'tab_'+companion);
+        theDiv.classList.add('private__tab');
+        theDiv.innerHTML = companion;
+        document.getElementById('tabs').appendChild(theDiv);
+        document.getElementById('tabContent').innerHTML =  now + message;
+    } else {
+        document.getElementById('tabContent').innerHTML += '<br />' + now + message;
     }
 }

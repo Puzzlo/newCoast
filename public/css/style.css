@@ -209,3 +209,17 @@ textarea#vvod__text {
 .login__form_input {
     margin: 0 auto 20px;
 }
+
+/* section for tabs */
+.private__tab {
+    width: 30%;
+    max-width: 30%;
+    min-width: 10%;
+    height: 15%;
+    border: 1px solid #000;
+}
+#tabContent {
+    border: 2px solid #ff29bb;
+    height: 84%;
+
+}

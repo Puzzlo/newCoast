@@ -97,11 +97,11 @@ io.sockets.on('connection', function(client){
 
         } else if ( data.priv.length ) {
                 // send private message to some ppl
-                    client.emit('privateMessage', { message: 'To ' + data.priv + ' : ' + data.message});
+                    //client.emit('privateMessage', {whoSend: data.whoSend,  message: 'To ' + data.priv + ' : ' + data.message});
                     data.priv.forEach(function(ppl){
                         //console.log(ppl);
                         io.sockets.connected[users[ppl]].emit('privateMessage',
-                              {message: 'from ' + data.whoSend + ' : ' + data.message});
+                              {time: data.idDate, whoSend: data.whoSend, message: data.message});
                     });
         } else {
                     // just simple message
