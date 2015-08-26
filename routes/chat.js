@@ -1,7 +1,9 @@
 /**
  * Created by esskov on 15.04.2015.
  */
-var socket = io.connect('http://192.168.0.67:3000');
+var socket = io.connect('http://192.168.0.67:3000', {
+    reconnect: false
+});
 //var socket = io.connect('http://localhost:3000');
 var privateRecipients = [];
 var confirmRecipients = [];
@@ -19,6 +21,11 @@ window.onload = function() {
 
     var simpleMessages = [];
     var nameOfUser = getCookie('nameOfUser');
+
+    socket.on('disconnect', function () {
+        console.log('disconnect client event....');
+        setTimeout(reconnect, 500);
+    });
 
     socket.emit('hello', {name: nameOfUser});
 
@@ -46,12 +53,14 @@ window.onload = function() {
         for ( var user in data ) {
 
             if( user != nameOfUser ) {
-                html += '<tr><td>' + user + '</td>'
+                html += '<tr><td name="' + user + '">' + user + '</td>'
                 + '<td>' + '<input type="checkbox" '
                     //+'onchange="changePrivate();">'+'</td>'
                 + 'onchange="changePrivateRecipients(\'' + user + '\');">'
-                     +'</td><td>'+'<input type="checkbox" class="checkbox checkbox-primary" '
-                    +'onchange="changeConfirmRecipients(\'' + user + '\');">'+'</td>'
+                     +'</td><td>'+'<input type="checkbox" class="checkbox" '
+                    + 'id="confirm_' + user + '" '
+                    +'onchange="changeConfirmRecipients(\'' + user + '\');">'
+                +'<label for="confirm_' + user + '"></label>'
                 + '</td></tr>';
             }
         }
@@ -215,11 +224,17 @@ function changePrivateRecipients(user) {
 }
 
 function changeConfirmRecipients(name) {
+    var elem = document.getElementsByName(name);
+    console.log('elem='+elem[0]);
     var index = confirmRecipients.indexOf(name);
-    if(index == -1)
+    if(index == -1) {
         confirmRecipients.push(name);
-    else {
+        elem[0].style.color = "#9FD468";
+        elem[0].style.fontWeight = "900";
+    } else {
         confirmRecipients.splice(index, 1);
+        elem[0].style.color = "black";
+        elem[0].style.fontWeight = "300";
     }
 }
 
@@ -277,6 +292,13 @@ function uncheckAllcheckboxes(){
     for(var i=0;i<ch.length;i++) {
         if (ch[i].type == 'checkbox' && ch[i].checked) ch[i].checked = !ch[i].checked;
     }
+    var elem = document.getElementsByTagName("td");
+    for(i=0;i<elem.length;i++) {
+        if(elem[i].getAttribute('name')) {
+            elem[i].style.color = "black";
+            elem[i].style.fontWeight = "300";
+        }
+    }
 }
 
 function run_cmd(cmd, args, callBack ) {
@@ -320,4 +342,11 @@ function showTabs(companion, message, time, self) {
     } else {
         document.getElementById('tabContent').innerHTML += '<br />' + now + message;
     }
+}
+
+function reconnect() {
+    socket.once('error', function () {
+        setTimeout(reconnect, 500);
+    });
+    socket.socket.connect();
 }

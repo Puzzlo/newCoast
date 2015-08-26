@@ -53,6 +53,7 @@ function findNameById(id){
     return pers;
 }
 
+
 io.sockets.on('connection', function(client){
 
 
@@ -156,6 +157,15 @@ io.sockets.on('connection', function(client){
         return res;
     }
 
+});
+
+io.sockets.on('close', function (req, res) {
+    console.log('in close');
+    res.redirect('/login');
+});
+io.sockets.on('disconnect', function (req, res) {
+    console.log('in disconnect');
+    res.redirect('/login');
 });
 
 
