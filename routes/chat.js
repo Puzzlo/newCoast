@@ -101,11 +101,11 @@ window.onload = function() {
         mB.innerHTML = 'От ' +  data.whoSend
         +  ' : '
         + data.message
-        + '  <button class = "btn btn-xs btn-danger" onclick = "confirm(\''
+        + '  <input type="button" value="Подтвердить" class = "btn__confirm" onclick = "confirm(\''
         + data.messageId + '\',\''
         + nameOfUser + '\',\''
         +  data.whoSend
-        + '\');this.disabled=true;this.className = \'btn btn-xs btn-info\';">Подтвердить</button>';
+        + '\');this.disabled=true;this.className = \'btn__confirm_done\';this.value=\'Подтверждено\';">';
         list.appendChild(mB);
         document.getElementById('confirmReceived').scrollTop = 9999;
         document.title = title + '(' + ++newForConfirm + ')';
@@ -345,8 +345,9 @@ function showTabs(companion, message, time, self) {
 }
 
 function reconnect() {
-    socket.once('error', function () {
-        setTimeout(reconnect, 500);
-    });
-    socket.socket.connect();
+    //socket.once('error', function () {
+    //    setTimeout(reconnect, 500);
+    //});
+    //socket.socket.connect();
+    window.location.href = '/';
 }

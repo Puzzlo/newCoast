@@ -275,3 +275,17 @@ label {
 /* Показываем получение фокуса. */
 /*.checkbox:focus + label:before {    box-shadow: inset 0 0 0 3px rgba(255,255,0,.5);}*/
 
+
+/*style button in confirm window*/
+.btn__confirm {
+    background: rgb(66, 184, 221); /* this is a light blue */
+    border-radius: 5px;
+    padding: 3px;
+    margin: 4px 0 0 0;
+}
+.btn__confirm_done {
+    background: #6EDD6C;
+    border-radius: 5px;
+    padding: 3px;
+    margin: 4px 0 0 0;
+}

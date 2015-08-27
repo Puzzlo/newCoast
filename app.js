@@ -35,6 +35,9 @@ app.use(session({ keys: config.get('keys') } ));
 // add reaction app to redirect on any pages
 require('routes')(app);
 
+// add message to db
+var addToHistory = require('routes/addToHistory');
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var server = http.listen(config.get('port'));
@@ -75,43 +78,49 @@ io.sockets.on('connection', function(client){
 
     client.on('sendMessageToServer', function(data){
 
+        console.log('add='+addToHistory(data));
+
         if(data.message == "") return;
         console.log(JSON.stringify(data));
+        console.log(JSON.stringify(users));
            // console.log('clisent =' + findClientsSocket(null, '/chat'));
 
 
-        //if(users.indexOf(data.whoSend)== -1) {
-        //    // TODO close connect of sender this message
-        //} else {
-            // big else, We handle all possible messages
-        if(data.confirm.length) {
-
-            data.confirm.forEach(function(receiver) {
-                io.sockets.connected[users[receiver]].emit('forConfirm',
-                    {
-                        messageId: data.idDate,
-                        whoSend: data.whoSend,
-                        message: data.message
-                    }
-                );
-            });
-
-        } else if ( data.priv.length ) {
-                // send private message to some ppl
-                    //client.emit('privateMessage', {whoSend: data.whoSend,  message: 'To ' + data.priv + ' : ' + data.message});
-                    data.priv.forEach(function(ppl){
-                        //console.log(ppl);
-                        io.sockets.connected[users[ppl]].emit('privateMessage',
-                              {time: data.idDate, whoSend: data.whoSend, message: data.message});
-                    });
+        if(Object.keys(users).indexOf(data.whoSend)== -1) {
+            // TODO close connect of sender this message
+            io.sockets.connected[data.whoSend].emit('disconnect');
         } else {
-                    // just simple message
-                io.sockets.emit('simpleMessage', {message: data.whoSend + ' : ' + data.message});
-            }
-        //}
+             // big else, We handle all possible messages
+            if(data.confirm.length) {
+
+                data.confirm.forEach(function(receiver) {
+                    io.sockets.connected[users[receiver]].emit('forConfirm',
+                        {
+                            messageId: data.idDate,
+                            whoSend: data.whoSend,
+                            message: data.message
+                        }
+                    );
+                });
+
+            } else if ( data.priv.length ) {
+                    // send private message to some ppl
+                        //client.emit('privateMessage', {whoSend: data.whoSend,  message: 'To '
+                        // + data.priv + ' : ' + data.message});
+                        data.priv.forEach(function(ppl){
+                            //console.log(ppl);
+                            io.sockets.connected[users[ppl]].emit('privateMessage',
+                                  {time: data.idDate, whoSend: data.whoSend, message: data.message});
+                        });
+            } else {
+                        // just simple message
+                    io.sockets.emit('simpleMessage', {message: data.whoSend + ' : ' + data.message});
+                }
+        }
     });
 
     client.on('accept', function (data) {
+        updateConfirmMessage(data);
        io.sockets.connected[users[data.senderOfMessage]].emit('iConfirm',
            {
                messageId: data.id,
