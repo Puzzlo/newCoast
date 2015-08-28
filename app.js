@@ -38,6 +38,9 @@ require('routes')(app);
 // add message to db
 var addToHistory = require('routes/addToHistory');
 
+// add reaction for confirm message
+var updateConfirmMessage = require('routes/updateConfirmMessage');
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var server = http.listen(config.get('port'));
