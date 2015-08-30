@@ -41,6 +41,9 @@ var addToHistory = require('routes/addToHistory');
 // add reaction for confirm message
 var updateConfirmMessage = require('routes/updateConfirmMessage');
 
+// add old messages in different windows
+var showTodaySimpleMessages = require('routes/showTodaySimpleMessages');
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var server = http.listen(config.get('port'));
@@ -69,6 +72,8 @@ io.sockets.on('connection', function(client){
         if(Object.keys(users).indexOf(data.name)!= -1) {
             client.emit('closeNow', {});
         } else {
+            var gg = showTodaySimpleMessages();
+            client.emit('simpleMessage', gg);
             client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
             client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});
             users[data.name] = client.id;
