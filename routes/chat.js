@@ -1,8 +1,8 @@
 /**
  * Created by esskov on 15.04.2015.
  */
-//var socket = io.connect('http://192.168.0.67:3000', {
-var socket = io.connect('http://localhost:3000', {
+var socket = io.connect('http://192.168.0.67:3000', {
+//var socket = io.connect('http://localhost:3000', {
     reconnect: false
 });
 //var socket = io.connect('http://localhost:3000');

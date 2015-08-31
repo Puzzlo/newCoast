@@ -43,6 +43,7 @@ var updateConfirmMessage = require('routes/updateConfirmMessage');
 
 // add old messages in different windows
 var showTodaySimpleMessages = require('routes/showTodaySimpleMessages');
+var showTodayConfirmMessages = require('routes/showTodayConfirmMessages');
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -68,19 +69,22 @@ io.sockets.on('connection', function(client){
 
 
     client.on('hello', function (data) {
-        console.log('index='+Object.keys(users).indexOf(data.name));
         if(Object.keys(users).indexOf(data.name)!= -1) {
             client.emit('closeNow', {});
         } else {
-            var gg = showTodaySimpleMessages();
-            client.emit('simpleMessage', gg);
+            var getSimpleMess = showTodaySimpleMessages;
+            console.log('gg='+ getSimpleMess);
+            for ( var i=0; i < getSimpleMess.length; i++) {
+                client.emit('simpleMessage', {message: getSimpleMess[i]});
+            }
+
+            var getConfirmMessages = showTodayConfirmMessages(data.name);
+            console.log('getConfirmMessages =' +  getConfirmMessages);
+
             client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
             client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});
             users[data.name] = client.id;
             io.sockets.emit('drawUsers', users);
-            //client.id = data.name;
-            console.log('users = ' + JSON.stringify(users));
-            console.log('client = ' + client);
         }
     });
 
