@@ -16,9 +16,8 @@ var showTodaySimpleMessages = function () {
 
         //col.find({_id: { $gte: midnight}}).forEach(function (err, res) {
         col.find({_id: {$gt: midnight}}).forEach(function (res) {
+            //console.log('res.message = ' + res.message);
             if(res.priv.length == 0 && res.confirm.length == 0) {
-                //var message = {res.whoSend.toString(): res.message};
-                //console.log('{\' ' + res.whoSend + '\': ' + res.message + '} ');
                 mess = res.whoSend + ': ' + res.message;
                 arrayOfMessages.push(mess);
                 //console.log('arrayOfMessages =' + arrayOfMessages);
@@ -29,8 +28,8 @@ var showTodaySimpleMessages = function () {
         //db.disconnect();
 
     });
-
+    console.log('in ' + new Date() + ' array = ' + arrayOfMessages);
     return arrayOfMessages;
 };
-console.log('showTodaySimpleMessages = ' + showTodaySimpleMessages());
+//console.log('showTodaySimpleMessages = ' + showTodaySimpleMessages());
 module.exports = showTodaySimpleMessages();

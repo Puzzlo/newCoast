@@ -50,18 +50,8 @@ var io = require('socket.io')(http);
 var server = http.listen(config.get('port'));
 console.log('application running on port ' + config.get('port'));
 
-var users = {};
 
-function findNameById(id){
-    if( Object.keys(users).length == 0 ) return null;
-    for ( pers in users){
-        if( users.pers == id ) {
-            var result = pers;
-            break;
-        }
-    }
-    return pers;
-}
+var users = {};
 
 
 io.sockets.on('connection', function(client){
@@ -69,9 +59,11 @@ io.sockets.on('connection', function(client){
 
 
     client.on('hello', function (data) {
-        if(Object.keys(users).indexOf(data.name)!= -1) {
-            client.emit('closeNow', {});
-        } else {
+        //if(Object.keys(users).indexOf(data.name)!= -1) {
+        //    //client.emit('closeNow', {});
+        //    io.sockets.connected[users[data.name]].emit('disconnect', {});
+        //} else {
+            console.log('hello client' + data.name + ' event');
             var getSimpleMess = showTodaySimpleMessages;
             console.log('gg='+ getSimpleMess);
             for ( var i=0; i < getSimpleMess.length; i++) {
@@ -79,13 +71,13 @@ io.sockets.on('connection', function(client){
             }
 
             var getConfirmMessages = showTodayConfirmMessages(data.name);
-            console.log('getConfirmMessages =' +  getConfirmMessages);
+            //console.log('getConfirmMessages =' +  getConfirmMessages);
 
             client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
             client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});
             users[data.name] = client.id;
             io.sockets.emit('drawUsers', users);
-        }
+        //}
     });
 
     client.on('sendMessageToServer', function(data){
@@ -95,8 +87,6 @@ io.sockets.on('connection', function(client){
         if(data.message == "") return;
         console.log(JSON.stringify(data));
         console.log(JSON.stringify(users));
-           // console.log('clisent =' + findClientsSocket(null, '/chat'));
-
 
         if(Object.keys(users).indexOf(data.whoSend)== -1) {
             // TODO close connect of sender this message
@@ -140,13 +130,27 @@ io.sockets.on('connection', function(client){
            }
        );
     });
-    client.on('disconnect', function(data){
-        var a = findNameById(client.id);
+    client.on('disconnect', function(){
+        console.log('disconnect client event....');
+        var a = findNameById(client.id.toString());
+        if(!a) {
+            var bb = new Date();
+            console.log('in false , time = ' + bb);
+            app.render('index', {title: 'res vs app render'}, function(err, html) {
+                console.log(html)
+            });
+        }
         delete users[a];
         if(Object.keys(users).length > 0 ) {
             client.broadcast.emit('simpleMessage', {message: 'Нас покидает ' + a});
             io.sockets.emit('drawUsers', users);
         }
+    });
+
+    client.on('close', function () {
+        console.log('close client event....');
+        io.sockets.connected[users[findNameById(client.id.toString())]].emit('disconnect');
+        //setTimeout(reconnect, 500);
     });
 
 
@@ -159,35 +163,25 @@ io.sockets.on('connection', function(client){
 
 
 
-    function findClientsSocket(roomId, namespace) {
-        var res = []
-            , ns = io.of(namespace ||"/");    // the default namespace is "/"
-
-        if (ns) {
-            for (var id in ns.connected) {
-                if(roomId) {
-                    var index = ns.connected[id].rooms.indexOf(roomId) ;
-                    if(index !== -1) {
-                        res.push(ns.connected[id]);
-                    }
-                } else {
-                    res.push(ns.connected[id]);
-                }
-            }
-        }
-        return res;
-    }
 
 });
 
-io.sockets.on('close', function (req, res) {
-    console.log('in close');
+io.sockets.on('close', function (client) {
+    console.log('socket in close');
     res.redirect('/login');
 });
 io.sockets.on('disconnect', function (req, res) {
-    console.log('in disconnect');
+    console.log('socket in disconnect');
     res.redirect('/login');
 });
 
 
+function findNameById(id){
+    for ( pers in users){
+        if( users[pers] == id ) {
+            return pers;
+        }
+    }
+    return false;
+}
 

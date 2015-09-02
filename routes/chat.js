@@ -1,8 +1,8 @@
 /**
  * Created by esskov on 15.04.2015.
  */
-//var socket = io.connect('http://192.168.0.67:3000', {
-var socket = io.connect('http://localhost:3000', {
+var socket = io.connect('http://192.168.0.67:3000', {
+//var socket = io.connect('http://localhost:3000', {
     reconnect: false
 });
 //var socket = io.connect('http://localhost:3000');
@@ -23,10 +23,14 @@ window.onload = function() {
     var simpleMessages = [];
     var nameOfUser = getCookie('nameOfUser');
 
-    socket.on('disconnect', function () {
-        console.log('disconnect client event....');
-        setTimeout(reconnect, 500);
-    });
+    //socket.on('disconnect', function () {
+    //    console.log('disconnect client event....');
+    //    //setTimeout(reconnect, 500);
+    //});
+    //socket.on('close', function () {
+    //    console.log('close client event....');
+    //    //setTimeout(reconnect, 500);
+    //});
 
     socket.emit('hello', {name: nameOfUser});
 
@@ -79,19 +83,19 @@ window.onload = function() {
         // работа с вкладками
         showTabs(data.whoSend, data.message, data.time);
 
-        //var priv = document.getElementById('private');
-        //privateMessages.push(data.message);
-        //console.log('private='+privateMessages);
-        //var liBegin = '<li>';
-        //var liEnd = '</li>';
-        //var inner = '<ul>';
-        //
-        //for(var i=0; i < privateMessages.length; i++){
-        //    inner += liBegin + privateMessages[i] + liEnd;
-        //}
-        //inner += '</ul>';
-        //priv.innerHTML = inner;
-        //document.getElementById('private').scrollTop = 9999;
+        var priv = document.getElementById('private');
+        privateMessages.push(data.message);
+        console.log('private='+privateMessages);
+        var liBegin = '<li>';
+        var liEnd = '</li>';
+        var inner = '<ul>';
+
+        for(var i=0; i < privateMessages.length; i++){
+            inner += liBegin + privateMessages[i] + liEnd;
+        }
+        inner += '</ul>';
+        priv.innerHTML = inner;
+        document.getElementById('private').scrollTop = 9999;
     });
 
     socket.on('forConfirm', function (data) {
