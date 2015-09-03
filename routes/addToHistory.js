@@ -8,7 +8,7 @@ var addToHistory = function (data) {
     mongo.connect(config.get('mongodb:uri') + config.get('mongodb:dbName'), function(err, db) {
         if (err) throw err;
         var col = db.collection(config.get('mongodb:history'));
-        col.insert({  _id: data.idDate
+        col.save({  _id: data.idDate
                     , whoSend: data.whoSend
                     , message: data.message
                     , priv: data.priv

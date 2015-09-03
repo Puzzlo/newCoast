@@ -63,8 +63,9 @@ io.sockets.on('connection', function(client){
         //    //client.emit('closeNow', {});
         //    io.sockets.connected[users[data.name]].emit('disconnect', {});
         //} else {
-            console.log('hello client' + data.name + ' event');
-            var getSimpleMess = showTodaySimpleMessages;
+            console.log('hello client ' + data.name + ' event');
+            var getSimpleMess = [];
+            getSimpleMess = showTodaySimpleMessages();
             console.log('gg='+ getSimpleMess);
             for ( var i=0; i < getSimpleMess.length; i++) {
                 client.emit('simpleMessage', {message: getSimpleMess[i]});
@@ -90,7 +91,7 @@ io.sockets.on('connection', function(client){
 
         if(Object.keys(users).indexOf(data.whoSend)== -1) {
             // TODO close connect of sender this message
-            io.sockets.connected[data.whoSend].emit('disconnect');
+            io.sockets.connected[data.whoSend].emit('close');
         } else {
              // big else, We handle all possible messages
             if(data.confirm.length) {
@@ -149,7 +150,7 @@ io.sockets.on('connection', function(client){
 
     client.on('close', function () {
         console.log('close client event....');
-        io.sockets.connected[users[findNameById(client.id.toString())]].emit('disconnect');
+        //io.sockets.connected[users[findNameById(client.id.toString())]].emit('disconnect');
         //setTimeout(reconnect, 500);
     });
 
