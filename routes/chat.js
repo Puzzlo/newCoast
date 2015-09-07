@@ -3,7 +3,7 @@
  */
 var socket = io.connect('http://192.168.0.67:3000', {
 //var socket = io.connect('http://localhost:3000', {
-//    reconnect: false
+    reconnect: false
 });
 //var socket = io.connect('http://localhost:3000');
 var privateRecipients = [];
@@ -23,14 +23,18 @@ window.onload = function() {
     var simpleMessages = [];
     var nameOfUser = getCookie('nameOfUser');
 
-    //socket.on('disconnect', function () {
-    //    console.log('disconnect client event....');
-    //    //setTimeout(reconnect, 500);
-    //});
-    //socket.on('close', function () {
-    //    console.log('close client event....');
-    //    //setTimeout(reconnect, 500);
-    //});
+    socket.on('disconnect', function () {
+        console.log('disconnect client event in client ....');
+        window.location.href = '/';
+        socket.io.disconnect();
+        //setTimeout(reconnect, 500);
+    });
+    socket.on('close', function () {
+        console.log('close client event in client ....');
+        window.location.href = '/';
+        socket.io.disconnect();
+        //setTimeout(reconnect, 500);
+    });
 
     socket.emit('hello', {name: nameOfUser});
 
