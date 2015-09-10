@@ -65,12 +65,19 @@ io.sockets.on('connection', function(client){
         //    io.sockets.connected[users[data.name]].emit('disconnect', {});
         //} else {
             console.log('hello client ' + data.name + ' event');
-            var getSimpleMess = [];
-            getSimpleMess = showTodaySimpleMessages();
-            console.log('gg='+ getSimpleMess);
-            for ( var i=0; i < getSimpleMess.length; i++) {
-                client.emit('simpleMessage', {message: getSimpleMess[i]});
-            }
+            //getSimpleMess = showTodaySimpleMessages;
+            showTodaySimpleMessages().then(
+                function (arr) {
+                    console.log('arr = ' + arr);
+                    for ( var i=0; i < arr.length; i++) {
+                        client.emit('simpleMessage', {message: arr[i]});
+                    }
+                },
+                function (err) {
+                    console.log(' error in app in showTodaySimpleMessages ' + err);
+                }
+            );
+
 
             var getConfirmMessages = showTodayConfirmMessages(data.name);
             //console.log('getConfirmMessages =' +  getConfirmMessages);
