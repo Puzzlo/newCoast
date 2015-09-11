@@ -68,13 +68,28 @@ io.sockets.on('connection', function(client){
             //getSimpleMess = showTodaySimpleMessages;
             showTodaySimpleMessages().then(
                 function (arr) {
-                    console.log('arr = ' + arr);
                     for ( var i=0; i < arr.length; i++) {
                         client.emit('simpleMessage', {message: arr[i]});
                     }
                 },
                 function (err) {
                     console.log(' error in app in showTodaySimpleMessages ' + err);
+                }
+            );
+            showTodayConfirmMessages(data.name).then(
+                function (arr) {
+                    for(mess in arr) {
+                        //console.log('mess to conf = ' + arr[mess].toConf);
+                        //console.log('mess = ' + JSON.stringify(arr[mess]));
+                        if(arr[mess].toConf) {  // need to confirmed
+                            client.emit('noResponce', arr[mess]);
+                        } else { // deja confirmed
+                            client.emit('yesResponce', arr[mess]);
+                        }
+                    }
+                }  ,
+                function (err) {
+                    console.log(' error in app in showTodayConfirmMessages ' + err);
                 }
             );
 
@@ -98,7 +113,6 @@ io.sockets.on('connection', function(client){
         console.log(JSON.stringify(users));
 
         if(Object.keys(users).indexOf(data.whoSend)== -1) {
-            // TODO close connect of sender this message
             io.sockets.connected[data.whoSend].emit('close');
         } else {
              // big else, We handle all possible messages

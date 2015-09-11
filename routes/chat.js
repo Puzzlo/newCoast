@@ -121,6 +121,36 @@ window.onload = function() {
 
     });
 
+    socket.on('noResponce', function (data) { // need to confirmed
+        var list = document.getElementById('confirmReceived');
+        var mB = document.createElement('li');
+        mB.className = 'list-group-item';
+        mB.innerHTML = 'От ' +  data.whoSend
+        +  ' : '
+        + data.message
+        + '  <input type="button" value="Подтвердить" class = "btn__confirm" onclick = "confirm(\''
+        + data.messageId + '\',\''
+        + nameOfUser + '\',\''
+        +  data.whoSend
+        + '\');this.disabled=true;this.className = \'btn__confirm_done\';this.value=\'Подтверждено\';">';
+        list.appendChild(mB);
+        document.getElementById('confirmReceived').scrollTop = 9999;
+        document.title = title + '(' + ++newForConfirm + ')';
+    });
+
+    socket.on('yesResponce', function (data) { // already confirmed
+        var list = document.getElementById('confirmReceived');
+        var mB = document.createElement('li');
+        mB.className = 'list-group-item';
+        mB.innerHTML = 'От ' +  data.whoSend
+        +  ' : '
+        + data.message
+        + '  <input type="button" value="Уже было подтверждено" class="btn__confirm_done" disabled="true">';
+        list.appendChild(mB);
+        document.getElementById('confirmReceived').scrollTop = 9999;
+    });
+
+
     socket.on('iConfirm', function (data) {
 
         messagesWithConfirm.forEach(function (obj) {

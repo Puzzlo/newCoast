@@ -1,14 +1,12 @@
 // showTodaySimpleMessages.js 
 
 var   config = require('config')
-    , async = require('async')
     , mongo = require('mongodb').MongoClient;
 var when = require('when');
 
 var showTodaySimpleMessages = function () {
     return when.promise(function(resolve, reject){
         var arrayOfMessages = [] ;
-        //console.log('arrayOfMessages outside =' + arrayOfMessages.length);
         var now = new Date();
         var midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime().toString();
 
@@ -20,18 +18,15 @@ var showTodaySimpleMessages = function () {
             cursor = col.find({_id: {$gt: midnight}});
             cursor.forEach(function (res) {
                 if (res.priv.length == 0 && res.confirm.length == 0) {
-                    console.log('res.message = ' + JSON.stringify(res));
+                    //console.log('res.message = ' + JSON.stringify(res));
                     mess = res.whoSend + ': ' + res.message;
                     arrayOfMessages.push(mess);
                     resolve(arrayOfMessages);
                 }
             });
-            console.log('arrayOfMessages in func =' + arrayOfMessages);
+            //console.log('arrayOfMessages in func =' + arrayOfMessages);
         });
     });
-
-    //callback(arrayOfMessages.length);
-    //console.log('in ' + new Date() + ' array = ' + arrayOfMessages);
 };
 //console.log('showTodaySimpleMessages = ' + showTodaySimpleMessages());
 module.exports = showTodaySimpleMessages;
