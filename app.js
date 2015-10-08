@@ -45,6 +45,7 @@ var updateConfirmMessage = require('routes/updateConfirmMessage');
 // add old messages in different windows
 var showTodaySimpleMessages = require('routes/showTodaySimpleMessages');
 var showTodayConfirmMessages = require('routes/showTodayConfirmMessages');
+var sTCM = require('routes/sTCM');
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -76,22 +77,27 @@ io.sockets.on('connection', function(client){
                     console.log(' error in app in showTodaySimpleMessages ' + err);
                 }
             );
-            showTodayConfirmMessages(data.name).then(
-                function (arr) {
-                    for(mess in arr) {
-                        //console.log('mess to conf = ' + arr[mess].toConf);
-                        //console.log('mess = ' + JSON.stringify(arr[mess]));
-                        if(arr[mess].toConf) {  // need to confirmed
-                            client.emit('noResponce', arr[mess]);
-                        } else { // deja confirmed
-                            client.emit('yesResponce', arr[mess]);
-                        }
-                    }
-                }  ,
-                function (err) {
-                    console.log(' error in app in showTodayConfirmMessages ' + err);
-                }
-            );
+        //console.log('stcm = ' + JSON.stringify(sTCM(data.name)));
+        console.log('sdsdsfg = ' + showTodayConfirmMessages(data.name));
+        //    showTodayConfirmMessages(data.name).then(
+        //        function (arr) {
+        //            console.log('mess to conf = ' + JSON.stringify(arr));
+        //            for(mess in arr) {
+        //                console.log('mess to conf = ' + arr[mess].toConf);
+        //                //console.log('mess = ' + JSON.stringify(arr[mess]));
+        //                if(arr[mess].toConf) {  // need to confirmed
+        //                    client.emit('noResponce', arr[mess]);
+        //                } else { // deja confirmed
+        //                    client.emit('yesResponce', arr[mess]);
+        //                }
+        //            }
+        //        //if(arr.toConf) client.emit('noResponce', arr);
+        //        //    else client.emit('yesResponce', arr);
+        //        }  ,
+        //        function (err) {
+        //            console.log(' error in app in showTodayConfirmMessages ' + err);
+        //        }
+        //    );
 
 
             var getConfirmMessages = showTodayConfirmMessages(data.name);
