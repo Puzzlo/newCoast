@@ -78,7 +78,14 @@ io.sockets.on('connection', function(client){
                 }
             );
         //console.log('stcm = ' + JSON.stringify(sTCM(data.name)));
-        console.log('sdsdsfg = ' + showTodayConfirmMessages(data.name));
+        showTodayConfirmMessages('2').then(function (msgs) {
+            console.log('in msgs, len=', msgs.length);
+            for (var i = 0; i < msgs.length; i++) {
+                // msgs etc etc
+                console.log('...', i);
+            }
+        });
+        //console.log('sdsdsfg = ' + showTodayConfirmMessages(data.name));
         //    showTodayConfirmMessages(data.name).then(
         //        function (arr) {
         //            console.log('mess to conf = ' + JSON.stringify(arr));
