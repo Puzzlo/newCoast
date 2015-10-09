@@ -121,7 +121,7 @@ window.onload = function() {
 
     });
 
-    socket.on('noResponce', function (data) { // need to confirmed
+    socket.on('needToResponce', function (data) { // need to confirmed
         alert('need to confirm');
         var list = document.getElementById('confirmReceived');
         var mB = document.createElement('li');
@@ -139,7 +139,7 @@ window.onload = function() {
         document.title = title + '(' + ++newForConfirm + ')';
     });
 
-    socket.on('yesResponce', function (data) { // already confirmed
+    socket.on('noNeedToResponce', function (data) { // already confirmed
         alert('deja');
         var list = document.getElementById('confirmReceived');
         var mB = document.createElement('li');

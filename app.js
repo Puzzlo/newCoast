@@ -78,11 +78,20 @@ io.sockets.on('connection', function(client){
                 }
             );
         //console.log('stcm = ' + JSON.stringify(sTCM(data.name)));
-        showTodayConfirmMessages('2').then(function (msgs) {
+        showTodayConfirmMessages(data.name).then(function (msgs) {
             console.log('in msgs, len=', msgs.length);
             for (var i = 0; i < msgs.length; i++) {
                 // msgs etc etc
-                console.log('...', i);
+                console.log('...', JSON.stringify(msgs[i]));
+                console.log('conf 1? ', "confirmed" in msgs[i]);
+                console.log('conf 1`? ', msgs[i].confirmed);
+
+                if(("confirmed" in msgs[i]) && (Object.keys(msgs[i].confirmed).indexOf(data.name) != -1)) {
+                    client.emit('needToResponce', msgs[i]);
+                    console.log('message ', msgs[i].message, ' need to confirm');
+                } else {
+                    client.emit('noNeedToResponce', msgs[i]);
+                }
             }
         });
         //console.log('sdsdsfg = ' + showTodayConfirmMessages(data.name));
