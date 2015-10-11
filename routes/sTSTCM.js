@@ -1,4 +1,5 @@
-//      showTodayConfirmMessages.js
+// sTSTCM.js 
+//showTodaySendToConfirmMessages
 
 var   config = require('config')
     , when = require('when')
@@ -8,7 +9,7 @@ var   config = require('config')
 require('trace');
 require('clarify');
 
-var showTodayConfirmMessages = function(name) {
+var sTSTCM = function(name) {
     return new Promise(function (resolve, reject) {
         var now = new Date();
         var midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime().toString();
@@ -18,10 +19,10 @@ var showTodayConfirmMessages = function(name) {
                 reject(err);
             }
             var col = db.collection(config.get('mongodb:history'));
-            return resolve(col.find({_id: {$gt: midnight}, confirm: name}).toArray());
+            return resolve(col.find({_id: {$gt: midnight}, whoSend: name}).toArray());
         });
     });
 
 };
 
-module.exports = showTodayConfirmMessages;
+module.exports = sTSTCM;

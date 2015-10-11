@@ -122,7 +122,8 @@ window.onload = function() {
     });
 
     socket.on('needToResponce', function (data) { // need to confirmed
-        alert('need to confirm');
+        //alert('need to confirm');
+        console.log('need to confirm: ', data);
         var list = document.getElementById('confirmReceived');
         var mB = document.createElement('li');
         mB.className = 'list-group-item';
@@ -130,7 +131,7 @@ window.onload = function() {
         +  ' : '
         + data.message
         + '  <input type="button" value="Подтвердить" class = "btn__confirm" onclick = "confirm(\''
-        + data.messageId + '\',\''
+        + data._id + '\',\''
         + nameOfUser + '\',\''
         +  data.whoSend
         + '\');this.disabled=true;this.className = \'btn__confirm_done\';this.value=\'Подтверждено\';">';
@@ -140,7 +141,7 @@ window.onload = function() {
     });
 
     socket.on('noNeedToResponce', function (data) { // already confirmed
-        alert('deja');
+        //alert('deja');
         var list = document.getElementById('confirmReceived');
         var mB = document.createElement('li');
         mB.className = 'list-group-item';
@@ -165,6 +166,21 @@ window.onload = function() {
 
     });
 
+    socket.on('initConfirm', function (data) {
+        //alert(JSON.stringify(data));
+        var list = document.getElementById('confirmSended');
+        for(var i=0; i<data.length; i++){
+            var newLi = document.createElement('li');
+            newLi.id = data[i].idMess;
+            var mess = data[i].message;
+            mess += '<span class="'+data[i].class+'">' + data[i].who + '</span>';
+            newLi.innerHTML = mess;
+            list.appendChild(newLi);
+        }
+
+    });
+
+
 
 
     //var codes = [];
@@ -183,7 +199,6 @@ window.onload = function() {
     //document.onkeyup = function(e) {
     //    codes = [];
     //};
-
 
 
 

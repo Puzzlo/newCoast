@@ -45,7 +45,7 @@ var updateConfirmMessage = require('routes/updateConfirmMessage');
 // add old messages in different windows
 var showTodaySimpleMessages = require('routes/showTodaySimpleMessages');
 var showTodayConfirmMessages = require('routes/showTodayConfirmMessages');
-var sTCM = require('routes/sTCM');
+var sTSTCM = require('routes/sTSTCM');
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -54,6 +54,7 @@ console.log('application running on port ' + config.get('port'));
 
 
 var users = {};
+var initConfirmArray = [];
 
 
 io.sockets.on('connection', function(client){
@@ -61,69 +62,63 @@ io.sockets.on('connection', function(client){
 
 
     client.on('hello', function (data) {
-        //if(Object.keys(users).indexOf(data.name)!= -1) {
-        //    //client.emit('closeNow', {});
-        //    io.sockets.connected[users[data.name]].emit('disconnect', {});
-        //} else {
-            console.log('hello client ' + data.name + ' event');
-            //getSimpleMess = showTodaySimpleMessages;
-            showTodaySimpleMessages().then(
-                function (arr) {
-                    for ( var i=0; i < arr.length; i++) {
-                        client.emit('simpleMessage', {message: arr[i]});
-                    }
-                },
-                function (err) {
-                    console.log(' error in app in showTodaySimpleMessages ' + err);
+        console.log('hello client ' + data.name + ' event');
+        showTodaySimpleMessages().then(
+            function (arr) {
+                for ( var i=0; i < arr.length; i++) {
+                    client.emit('simpleMessage', {message: arr[i]});
                 }
-            );
-        //console.log('stcm = ' + JSON.stringify(sTCM(data.name)));
+            },
+            function (err) {
+                console.log(' error in app in showTodaySimpleMessages ' + err);
+            }
+        );
         showTodayConfirmMessages(data.name).then(function (msgs) {
-            console.log('in msgs, len=', msgs.length);
             for (var i = 0; i < msgs.length; i++) {
-                // msgs etc etc
-                console.log('...', JSON.stringify(msgs[i]));
-                console.log('conf 1? ', "confirmed" in msgs[i]);
-                console.log('conf 1`? ', msgs[i].confirmed);
-
                 if(("confirmed" in msgs[i]) && (Object.keys(msgs[i].confirmed).indexOf(data.name) != -1)) {
-                    client.emit('needToResponce', msgs[i]);
+                    client.emit('noNeedToResponce', msgs[i]);
                     console.log('message ', msgs[i].message, ' need to confirm');
                 } else {
-                    client.emit('noNeedToResponce', msgs[i]);
+                    client.emit('needToResponce', msgs[i]);
                 }
             }
         });
-        //console.log('sdsdsfg = ' + showTodayConfirmMessages(data.name));
-        //    showTodayConfirmMessages(data.name).then(
-        //        function (arr) {
-        //            console.log('mess to conf = ' + JSON.stringify(arr));
-        //            for(mess in arr) {
-        //                console.log('mess to conf = ' + arr[mess].toConf);
-        //                //console.log('mess = ' + JSON.stringify(arr[mess]));
-        //                if(arr[mess].toConf) {  // need to confirmed
-        //                    client.emit('noResponce', arr[mess]);
-        //                } else { // deja confirmed
-        //                    client.emit('yesResponce', arr[mess]);
-        //                }
-        //            }
-        //        //if(arr.toConf) client.emit('noResponce', arr);
-        //        //    else client.emit('yesResponce', arr);
-        //        }  ,
-        //        function (err) {
-        //            console.log(' error in app in showTodayConfirmMessages ' + err);
-        //        }
-        //    );
+        //TODO
+        //sTSTCM === showTodaySendToConfirmMessages;
+        sTSTCM(data.name).then(function (msgs) {
+            //console.log(msgs[0]);
+            var cl='';
 
+            for (var i = 0; i < msgs.length; i++) {
+                //console.log(msgs[i].confirm);
+                if("confirm" in msgs[i]){
+                    for(var who=0;who < msgs[i].confirm.length; who++) {
+                        var tmp = msgs[i].confirm[who];
+                        //console.log('keys = ', Object.keys(msgs[i].confirmed).indexOf(tmp));
+                        if("confirmed" in msgs[i] && (Object.keys(msgs[i].confirmed).indexOf(tmp) != -1)){
+                            //console.log('who=', msgs[i].confirm[who]);
+                            cl = 'confirmGreen';
+                        } else {
+                            cl = 'confirmRed';
+                        }
+                    initConfirmArray.push({ 'class': cl,
+                                            'who': tmp,
+                                            'idMess': msgs[i]._id,
+                                            'message': msgs[i].message
+                                            });
+                    }
+                }
+            }
+            console.log('users[data.name] = ', users[data.name]);
+            if(msgs.length > 0) {
+                io.sockets.connected[users[data.name]].emit('initConfirm', initConfirmArray);
+            }
+        });
 
-            var getConfirmMessages = showTodayConfirmMessages(data.name);
-            //console.log('getConfirmMessages =' +  getConfirmMessages);
-
-            client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
-            client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});
-            users[data.name] = client.id;
-            io.sockets.emit('drawUsers', users);
-        //}
+        client.emit('simpleMessage', {message: 'Привет, ' + data.name + ', мы тебя ждали'});
+        client.broadcast.emit('simpleMessage', {message: 'К нам присоединилось ' + data.name});
+        users[data.name] = client.id;
+        io.sockets.emit('drawUsers', users);
     });
 
     client.on('sendMessageToServer', function(data){
@@ -167,6 +162,7 @@ io.sockets.on('connection', function(client){
     });
 
     client.on('accept', function (data) {
+        console.log('in accept: ', data);
         updateConfirmMessage(data);
        io.sockets.connected[users[data.senderOfMessage]].emit('iConfirm',
            {
