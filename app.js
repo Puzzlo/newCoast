@@ -86,27 +86,36 @@ io.sockets.on('connection', function(client){
         //TODO
         //sTSTCM === showTodaySendToConfirmMessages;
         sTSTCM(data.name).then(function (msgs) {
-            //console.log(msgs[0]);
+            console.log('msgs[0] = ', msgs[0]);
             var cl='';
+            initConfirmArray.length = 0;
 
             for (var i = 0; i < msgs.length; i++) {
                 //console.log(msgs[i].confirm);
                 if("confirm" in msgs[i]){
-                    for(var who=0;who < msgs[i].confirm.length; who++) {
-                        var tmp = msgs[i].confirm[who];
-                        //console.log('keys = ', Object.keys(msgs[i].confirmed).indexOf(tmp));
-                        if("confirmed" in msgs[i] && (Object.keys(msgs[i].confirmed).indexOf(tmp) != -1)){
-                            //console.log('who=', msgs[i].confirm[who]);
-                            cl = 'confirmGreen';
-                        } else {
-                            cl = 'confirmRed';
+                    var createCSSConfirm = {};
+                    for(var c=0;c < msgs[i].confirm.length; c++) {
+                        var tmp = msgs[i].confirm[c];
+                        createCSSConfirm[tmp] = 'confirmRed';
+                        if ("confirmed" in msgs[i] && (Object.keys(msgs[i].confirmed).indexOf(tmp) != -1)) {
+                            createCSSConfirm[tmp] = 'confirmGreen';
                         }
-                    initConfirmArray.push({ 'class': cl,
+
+                    }
+                    //for(var who=0;who < msgs[i].confirm.length; who++) {
+                    //    var tmp = msgs[i].confirm[who];
+                    //    if("confirmed" in msgs[i] && (Object.keys(msgs[i].confirmed).indexOf(tmp) != -1)){
+                    //        cl = 'confirmGreen';
+                    //    } else {
+                    //        cl = 'confirmRed';
+                    //    }
+                    console.log(JSON.stringify(createCSSConfirm));
+                    initConfirmArray.push({ 'classes': createCSSConfirm,
                                             'who': tmp,
                                             'idMess': msgs[i]._id,
                                             'message': msgs[i].message
                                             });
-                    }
+
                 }
             }
             console.log('users[data.name] = ', users[data.name]);
@@ -207,7 +216,7 @@ io.sockets.on('connection', function(client){
 
 });
 
-io.sockets.on('close', function (client) {
+io.sockets.on('close', function () {
     console.log('socket in close');
     res.redirect('/login');
 });
@@ -218,7 +227,7 @@ io.sockets.on('disconnect', function (req, res) {
 
 
 function findNameById(id){
-    for ( pers in users){
+    for ( var pers in users){
         if( users[pers] == id ) {
             return pers;
         }

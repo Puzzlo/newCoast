@@ -142,7 +142,7 @@ textarea#vvod__text {
 }
 
 #confirmSended, #private {
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 #form__buttons {

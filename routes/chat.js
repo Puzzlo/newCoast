@@ -1,8 +1,8 @@
 /**
  * Created by esskov on 15.04.2015.
  */
-//var socket = io.connect('http://192.168.0.67:3000', {
-var socket = io.connect('http://localhost:3000', {
+var socket = io.connect('http://192.168.0.67:3000', {
+//var socket = io.connect('http://localhost:3000', {
     reconnect: false
 });
 //var socket = io.connect('http://localhost:3000');
@@ -167,13 +167,16 @@ window.onload = function() {
     });
 
     socket.on('initConfirm', function (data) {
-        //alert(JSON.stringify(data));
+        //console.log('init = ' + JSON.stringify(data));
         var list = document.getElementById('confirmSended');
+        list.innerHTML = '';
         for(var i=0; i<data.length; i++){
             var newLi = document.createElement('li');
             newLi.id = data[i].idMess;
             var mess = data[i].message;
-            mess += '<span class="'+data[i].class+'">' + data[i].who + '</span>';
+            for ( var cl in data[i].classes) {
+                mess += '<span class="'+data[i].classes[cl]+'">' + cl + '</span>';
+            }
             newLi.innerHTML = mess;
             list.appendChild(newLi);
         }
